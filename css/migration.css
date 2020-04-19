@@ -1,0 +1,23 @@
+.ys-migration-section {
+    padding: 2em 0;
+    border-bottom: 1px solid #aaa;
+}
+.ys-migration-post__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border: 1px solid #aaa;
+    border-bottom: 0;
+}
+.ys-migration-post__row {
+    display: flex;
+    margin: 0;
+    padding: .5em 1em;
+    border-bottom: 1px solid #aaa;
+}
+.ys-migration-post__title {
+    flex-grow: 1;
+}
+.ys-migration-section__button {
+    margin-top: 1em;
+}
