@@ -158,10 +158,37 @@ class Option_Page {
 						</div>
 					<?php endif; ?>
 				</div>
+				<div class="ys-migration-section">
+					<h3>廃止されたショートコードの検索</h3>
+					<p>
+						v4で廃止されたショートコードが含まれているページの一覧<br>
+						<strong>※ショートコードは自動で削除・変換できません。対象の投稿を確認・修正してください。</strong>
+					</p>
+					<?php $this->get_short_code_page() ?>
+				</div>
 			</form>
 		</div>
 		<?php
 
+	}
+
+	/**
+	 * 廃止されたショートコードを使っているページ
+	 */
+	private function get_short_code_page() {
+		$short_code = new Short_Code();
+		$row        = '';
+		$list       = $short_code->search_short_code();
+		if ( empty( $list ) ) {
+			$row = $this->get_row( '対象データはありません。' );
+		} else {
+			foreach ( $list as $item ) {
+				$item['post']->post_title = $item['short_code'] . ' : ' . $item['post']->post_title;
+				// 結合.
+				$row .= $this->get_post_row( $item['post'], true );
+			}
+		}
+		$this->print_list( $row );
 	}
 
 	/**
