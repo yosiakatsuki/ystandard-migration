@@ -99,7 +99,7 @@ class Option_Page {
 				<div class="ys-migration-section">
 					<h3>ページテンプレート</h3>
 					<p>
-						「タイトルなし（スリム・ワイド）」テンプレートをv4用のテンプレート「投稿ヘッダーなし 1カラム」へ変換します。<br>
+						「タイトルなし（スリム・通常）」テンプレートをv4用のテンプレート「投稿ヘッダーなし 1カラム（通常・ワイド）」へ変換します。<br>
 						<small>※手動で変更する場合は「編集」リンクから編集を実施してください。</small>
 					</p>
 					<?php if ( $this->get_page_template() ) : ?>
@@ -111,8 +111,11 @@ class Option_Page {
 					<?php endif; ?>
 				</div>
 				<div class="ys-migration-section">
-					<h3>簡易人気記事ランキング用設定</h3>
-					<p>各記事に作成されたランキング作成用の設定値を削除します。</p>
+					<h3>簡易人気記事ランキング用設定の削除</h3>
+					<p>
+						各記事に作成されたランキング作成用の設定値を削除します。<br>
+						v4ではテーマでのラインキング作成機能は廃止になりました。
+					</p>
 					<?php if ( $this->get_ranking() ) : ?>
 						<div class="ys-migration-section__button">
 							<button class="button button-primary" type="submit" name="migration" value="ranking">
@@ -122,8 +125,8 @@ class Option_Page {
 					<?php endif; ?>
 				</div>
 				<div class="ys-migration-section">
-					<h3>その他投稿設定</h3>
-					<p>「AMPページを作成しない」「フォローボックスを表示しない」設定を削除します</p>
+					<h3>その他投稿設定の削除</h3>
+					<p>v4で廃止された「AMPページを作成しない」「フォローボックスを表示しない」設定を削除します。</p>
 					<?php if ( $this->get_other_post_meta() ) : ?>
 						<div class="ys-migration-section__button">
 							<button class="button button-primary" type="submit" name="migration" value="post_meta">
@@ -132,10 +135,81 @@ class Option_Page {
 						</div>
 					<?php endif; ?>
 				</div>
+
+				<div class="ys-migration-section">
+					<h3>サイト設定の変換</h3>
+					<p>テーマカスタマイザーで設定出来る内容をv4の設定に変換します。</p>
+					<?php if ( $this->get_site_option_convert() ) : ?>
+						<div class="ys-migration-section__button">
+							<button class="button button-primary" type="submit" name="migration" value="convert_site_option">
+								サイト設定を変換
+							</button>
+						</div>
+					<?php endif; ?>
+				</div>
+				<div class="ys-migration-section">
+					<h3>廃止された設定の削除</h3>
+					<p>v4で廃止された設定を削除します。</p>
+					<?php if ( $this->get_site_option_delete() ) : ?>
+						<div class="ys-migration-section__button">
+							<button class="button button-primary" type="submit" name="migration" value="delete_site_option">
+								サイト設定を削除
+							</button>
+						</div>
+					<?php endif; ?>
+				</div>
 			</form>
 		</div>
 		<?php
 
+	}
+
+	/**
+	 * サイト設定削除
+	 *
+	 * @return bool
+	 */
+	private function get_site_option_delete() {
+		$site_option = new Site_Option();
+		$data        = $site_option->search_delete();
+		$row         = '';
+		$button      = true;
+
+		if ( ! empty( $data ) ) {
+			$row .= $this->get_row( "対象件数: ${data}件" );
+		} else {
+			$row    = $this->get_row( '対象データはありません。' );
+			$button = false;
+		}
+
+		$this->print_list( $row );
+
+		return $button;
+	}
+
+	/**
+	 * サイト設定変換
+	 *
+	 * @return bool
+	 */
+	private function get_site_option_convert() {
+		$site_option = new Site_Option();
+		$data        = $site_option->search_convert();
+		$row         = '';
+		$button      = true;
+
+		if ( ! empty( $data ) ) {
+			foreach ( $data as $item ) {
+				$row .= $this->get_row( $item );
+			}
+		} else {
+			$row    = $this->get_row( '対象データはありません。' );
+			$button = false;
+		}
+
+		$this->print_list( $row );
+
+		return $button;
 	}
 
 	/**
@@ -265,6 +339,7 @@ class Option_Page {
 		}
 		$this->success_count = 0;
 		$post_meta           = new Post_Meta();
+		$site_option         = new Site_Option();
 		// テンプレート設定.
 		if ( 'template' === $_POST['migration'] ) {
 			$this->success_count = $post_meta->update_template();
@@ -276,6 +351,14 @@ class Option_Page {
 		// その他.
 		if ( 'post_meta' === $_POST['migration'] ) {
 			$this->success_count = $post_meta->delete_other_post_meta();
+		}
+		// 設定変換.
+		if ( 'convert_site_option' === $_POST['migration'] ) {
+			$this->success_count = $site_option->convert_options();
+		}
+		// 設定削除.
+		if ( 'delete_site_option' === $_POST['migration'] ) {
+			$this->success_count = $site_option->delete_options();
 		}
 
 		if ( empty( $this->success_count ) ) {

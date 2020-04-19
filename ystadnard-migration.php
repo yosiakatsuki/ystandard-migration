@@ -34,3 +34,4 @@ define( 'YSTDMG_URL', untrailingslashit( plugin_dir_url( __FILE__ ) ) );
 
 require_once __DIR__ . '/inc/class-option-page.php';
 require_once __DIR__ . '/inc/class-post-meta.php';
+require_once __DIR__ . '/inc/class-site-option.php';
