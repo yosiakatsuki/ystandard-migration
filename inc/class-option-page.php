@@ -114,7 +114,7 @@ class Option_Page {
 					<h3>簡易人気記事ランキング用設定の削除</h3>
 					<p>
 						各記事に作成されたランキング作成用の設定値を削除します。<br>
-						v4ではテーマでのラインキング作成機能は廃止になりました。
+						v4ではテーマでのランキング作成機能は廃止になりました。
 					</p>
 					<?php if ( $this->get_ranking() ) : ?>
 						<div class="ys-migration-section__button">
